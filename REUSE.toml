@@ -1,0 +1,23 @@
+version = 1
+
+[[annotations]]
+path = "content/*.md"
+SPDX-FileCopyrightText = [
+    "2026 Intevation GmbH <https://intevation.de>"
+]
+SPDX-License-Identifier = "Apache-2.0"
+
+[[annotations]]
+path = "archetypes/*.md"
+SPDX-FileCopyrightText = [
+    "2026 Intevation GmbH <https://intevation.de>"
+]
+SPDX-License-Identifier = "Apache-2.0"
+
+[[annotations]]
+path = "layouts/**/*.html"
+SPDX-FileCopyrightText = [
+    "2026 Intevation GmbH <https://intevation.de>"
+]
+SPDX-License-Identifier = "Apache-2.0"
+

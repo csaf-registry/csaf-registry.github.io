@@ -1,0 +1,6 @@
+{{ $lang := .Get "type" }}
+{{ $regName := .Get "registry" }}
+{{ $kind := .Get "src" }}
+{{ $data := index hugo.Data.registries $regName }}
+{{ $json := index $data $kind | jsonify (dict "indent" "  ") }}
+{{ highlight $json $lang }}

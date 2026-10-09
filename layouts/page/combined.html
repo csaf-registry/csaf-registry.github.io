@@ -1,0 +1,121 @@
+{{ define "main" }}
+{{ $regName := .Params.registry }}
+{{ $dateFmt := "2006-01-02" }}
+{{ $timeFmt := "15:04:05" }}
+{{ $timezone := "UTC" }}
+{{ $linkSuffix := "" }}
+{{ if eq hugo.Environment "development" }}
+{{ $linkSuffix = "render" }}
+{{ end }}
+<div class="container my-5">
+    {{ $data := index hugo.Data.registries $regName }}
+    {{ $reg := $data.registry }}
+    <a href="/">Overview</a>
+    <div>{{ $data.readme | markdownify }}</div>
+    <hr>
+    <h2 id="__reg">Registry Information</h2>
+    <a href="#">Back to top</a>
+    <p>Last updated on {{ $reg.last_updated | time.AsTime | time.In $timezone | time.Format $dateFmt }} {{ $reg.last_updated | time.AsTime | time.In $timezone | time.Format $timeFmt }} {{ $timezone }} with version {{ $reg.registry_version }}</p>
+    <p class="text-muted">The source for this information is available <a href="registry/{{$linkSuffix}}">here</a>{{ if isset $data "registry.schema" }} based on the following <a href="registry.schema/{{$linkSuffix}}">schema</a>{{ end }}</p>
+    <div class="table-responsive shadow-sm rounded my-2 ms-3">
+        <table class="table tabel-hover table-striped align-middle mb-0">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Summary</th>
+                    <th>Pattern</th>
+                    <th>Example IDs</th>
+                    <th>Published</th>
+                    <th>Updated</th>
+                    <th>Mapping</th>
+                </tr>
+            </thead>
+            <tbody>
+                {{ range $reg.entries }}
+                {{ $related_mapping := "" }}
+                {{ if and ( $data.mapping ) ( $data.mapping.entries ) }}
+                {{ $related_mapping = where $data.mapping.entries "old_system_name" .common_name }}
+                {{ end }}
+                <tr>
+                    <td><a id="tbl_{{ replace .common_name " " "-" }}" href="{{ .system_name }}" target="_blank">{{ .common_name }}</a></td>
+                    <td>{{ .summary }}</td>
+                    <td>{{ .text_pattern }}</td>
+                    <td>{{ delimit .example_identifiers ","}}</td>
+                    <td>{{ .published | time.AsTime | time.In $timezone | time.Format $dateFmt }} {{ .published | time.AsTime | time.In $timezone | time.Format $timeFmt }} {{ $timezone }}</td>
+                    <td>{{ .updated | time.AsTime | time.In $timezone | time.Format $dateFmt }} {{ .updated | time.AsTime | time.In $timezone | time.Format $timeFmt }} {{ $timezone }}</td>
+                    <td>{{ with first 1 $related_mapping }} <a href="#{{ replace ((index . 0).old_system_name) " " "-" }}">Mapping</a> {{ end }}</td>
+                </tr>
+                {{ end }}
+            </tbody>
+        </table>
+    </div>
+    {{ $map := $data.mapping }}
+    {{ if $map }}
+    {{ $ambiguous := where $map.entries "ambiguous" true }}
+    {{ $unambiguous := where $map.entries "ambiguous" false }}
+    <h2 id="__map" class="mt-4">Mappings</h2>
+    <a href="#">Back to top</a>
+    <p>Last updated on {{ $map.last_updated | time.AsTime | time.In $timezone | time.Format $dateFmt }} {{ $map.last_updated | time.AsTime | time.In $timezone | time.Format $timeFmt }} {{ $timezone }} with version {{ $map.mapping_version }}</p>
+    <p class="text-muted">The source for this information is available <a href="mapping/{{$linkSuffix}}">here</a>{{ if isset $data "mapping.schema" }} based on the following <a href="mapping.schema/{{$linkSuffix}}">schema</a>{{ end }}</p>
+    {{ if $unambiguous}}
+    <h3>Unambiguous Mappings</h3>
+    <ul>
+        {{ range $unambiguous }}
+        <li id="{{ replace .old_system_name " " "-"}}"><a href="#tbl_{{ replace .old_system_name " " "-"}}">{{ .old_system_name }}</a></li>
+        <div class="table-responsive shadow-sm rounded my-2">
+            <table class="table tabel-hover table-striped align-middle mb-0">
+                <thead>
+                    <tr>
+                        <th>Condition</th>
+                        <th>Rule</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {{ range .text_conversion_rules }}
+                    <tr>
+                        <td>{{ .pattern_precondition }}</td>
+                        <td>{{ .rule }}</td>
+                    </tr>
+                    {{ end }}
+                </tbody>
+            </table>
+        </div>
+        {{ end }}
+    </ul>
+    <p>&nbsp;</p>
+    {{ end }}
+    {{ if $ambiguous }}
+    <h3>Ambiguous Mappings</h3>
+    <a href="#">Back to top</a>
+    <div class="table-responsive shadow-sm rounded my-2 ms-3">
+        <table class="table tabel-hover table-striped align-middle mb-0">
+            <thead>
+                <tr>
+                    <th>System</th>
+                    <th>Registered Systems</th>
+                    <th>Unregistered Systems</th>
+                </tr>
+            </thead>
+            <tbody>
+                {{ range $ambiguous }}
+                <tr id="{{ replace .old_system_name " " "-"}}">
+                    <td>{{ .old_system_name }}</td>
+                    <td>
+                        {{ range .potentially_matching_registered_system_names }}
+                        <a href="{{ . }}">{{ . }}</a><br/>
+                        {{ end }}
+                    </td>
+                    <td>
+                        {{ range .potentially_matching_unregistered_system_names }}
+                        <a href="{{ . }}">{{ . }}</a><br/>
+                        {{ end }}
+                    </td>
+                </tr>
+                {{ end }}
+            </tbody>
+        </table>
+    </div>
+    {{ end }}
+    {{ end }}
+</div>
+{{ end }}

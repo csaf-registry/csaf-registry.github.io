@@ -1,0 +1,9 @@
+# SPDX-FileCopyrightText: 2026 Intevation GmbH <https://intevation.de>
+# SPDX-License-Identifier: Apache-2.0
+/resources/
+/public/
+/.hugo_build.lock
+/data/registry.json
+/data/mapping.json
+/data/registries.json
+/content/_index.md

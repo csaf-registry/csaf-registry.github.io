@@ -1,0 +1,13 @@
+# SPDX-FileCopyrightText: 2026 Intevation GmbH <https://intevation.de>
+# SPDX-License-Identifier: Apache-2.0
+baseURL = 'https://registry.csaf.dev/'
+locale = 'en-us'
+disableKinds = ['taxonomy', 'RSS', 'sitemap']
+ignoreFiles = ['.license$']
+canonifyURLs = true
+theme = 'bootstrap'
+defaultContentLanguage = 'en'
+[languages]
+  [languages.en]
+    weight = 1
+    locale = 'en-GB'
